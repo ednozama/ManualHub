@@ -3,24 +3,24 @@ import 'package:hive/hive.dart';
 part 'device.g.dart';
 
 @HiveType(typeId: 0)
-class Device {
+class Device extends HiveObject {
 
   @HiveField(0)
-  final String manufacturer;
+  String manufacturer;
 
   @HiveField(1)
-  final String model;
+  String model;
 
   @HiveField(2)
-  final String category;
+  String category;
 
   @HiveField(3)
-  final String location;
+  String location;
 
   @HiveField(4)
-  final String? imagePath;
+  String? imagePath;
 
-  const Device({
+  Device({
     required this.manufacturer,
     required this.model,
     required this.category,

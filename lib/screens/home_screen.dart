@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
+import '../models/device.dart';
+import '../services/storage_service.dart';
 import '../theme/app_theme.dart';
 import 'add_device_screen.dart';
+import '../widgets/device_card.dart';
+import 'device_detail_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -10,6 +15,21 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.background,
+
+      floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: AppTheme.primary,
+        foregroundColor: Colors.white,
+        icon: const Icon(Icons.add),
+        label: const Text("Gerät hinzufügen"),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const AddDeviceScreen(),
+            ),
+          );
+        },
+      ),
 
       body: SafeArea(
         child: Padding(
@@ -55,62 +75,80 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 30),
+              const SizedBox(height: 25),
 
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
+              Expanded(
+                child: ValueListenableBuilder<Box<Device>>(
+                  valueListenable: StorageService.listenToDevices(),
 
-                  child: Column(
-                    children: [
+                  builder: (context, box, child) {
 
-                      const Icon(
-                        Icons.devices_other,
-                        size: 60,
-                        color: AppTheme.primary,
-                      ),
+                    if (box.isEmpty) {
+                      return Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
 
-                      const SizedBox(height: 15),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
 
-                      const Text(
-                        "Noch keine Geräte vorhanden",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                            children: [
 
-                      const SizedBox(height: 10),
+                              const Icon(
+                                Icons.devices_other,
+                                size: 60,
+                                color: AppTheme.primary,
+                              ),
 
-                      const Text(
-                        "Verwalte Bedienungsanleitungen,\nRechnungen und Garantien an einem Ort.",
-                        textAlign: TextAlign.center,
-                      ),
+                              const SizedBox(height: 15),
 
-                      const SizedBox(height: 25),
+                              const Text(
+                                "Noch keine Geräte vorhanden",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
 
-                      SizedBox(
-                        width: double.infinity,
+                              const SizedBox(height: 10),
 
-                        child: ElevatedButton.icon(
-                          onPressed: () {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (_) => const AddDeviceScreen(),
-    ),
-  );
-},
-
-                          icon: const Icon(Icons.add),
-
-                          label: const Text(
-                            "Neues Gerät hinzufügen",
+                              const Text(
+                                "Tippe unten auf 'Gerät hinzufügen', um dein erstes Gerät anzulegen.",
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
                           ),
                         ),
-                      ),
-                    ],
-                  ),
+                      );
+                    }
+
+                    return ListView.builder(
+                      itemCount: box.length,
+
+                      itemBuilder: (context, index) {
+
+                        final device = box.getAt(index)!;
+
+                        return DeviceCard(
+  device: device,
+
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => DeviceDetailScreen(
+          device: device,
+        ),
+      ),
+    );
+  },
+
+  onDelete: () async {
+    await StorageService.deleteDevice(index);
+  },
+);
+                      },
+                    );
+                  },
                 ),
               ),
             ],

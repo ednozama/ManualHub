@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 
-import 'theme/app_theme.dart';
-import 'screens/home_screen.dart';
 import 'screens/splash_screen.dart';
+import 'services/storage_service.dart';
+import 'theme/app_theme.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await StorageService.init();
+
   runApp(const ManualHubApp());
 }
 

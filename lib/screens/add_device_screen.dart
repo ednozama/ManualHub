@@ -3,9 +3,16 @@ import 'package:flutter/material.dart';
 import '../widgets/custom_dropdown.dart';
 import '../widgets/custom_textfield.dart';
 import '../widgets/primary_button.dart';
+import '../models/device.dart';
+import '../services/storage_service.dart';
 
 class AddDeviceScreen extends StatefulWidget {
-  const AddDeviceScreen({super.key});
+  final Device? device;
+
+  const AddDeviceScreen({
+    super.key,
+    this.device,
+  });
 
   @override
   State<AddDeviceScreen> createState() => _AddDeviceScreenState();
@@ -48,11 +55,64 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
   ];
 
   @override
+void initState() {
+  super.initState();
+
+  if (widget.device != null) {
+    manufacturerController.text = widget.device!.manufacturer;
+    modelController.text = widget.device!.model;
+
+    selectedCategory = widget.device!.category;
+    selectedLocation = widget.device!.location;
+  }
+}
+
+  @override
   void dispose() {
     manufacturerController.dispose();
     modelController.dispose();
     super.dispose();
   }
+
+  Future<void> _saveDevice() async {
+  if (manufacturerController.text.trim().isEmpty ||
+      modelController.text.trim().isEmpty ||
+      selectedCategory == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          'Bitte Hersteller, Modell und Kategorie ausfüllen.',
+        ),
+      ),
+    );
+    return;
+  }
+
+  if (widget.device == null) {
+    // Neues Gerät anlegen
+    final device = Device(
+      manufacturer: manufacturerController.text.trim(),
+      model: modelController.text.trim(),
+      category: selectedCategory!,
+      location: selectedLocation ?? "",
+      imagePath: null,
+    );
+
+    await StorageService.addDevice(device);
+  } else {
+    // Bestehendes Gerät bearbeiten
+    widget.device!.manufacturer = manufacturerController.text.trim();
+    widget.device!.model = modelController.text.trim();
+    widget.device!.category = selectedCategory!;
+    widget.device!.location = selectedLocation ?? "";
+
+    await widget.device!.save();
+  }
+
+  if (!mounted) return;
+
+  Navigator.pop(context);
+}
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +120,11 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
     return Scaffold(
 
       appBar: AppBar(
-        title: const Text("Neues Gerät"),
+        title: Text(
+  widget.device == null
+      ? "Neues Gerät"
+      : "Gerät bearbeiten",
+),
       ),
 
       body: SingleChildScrollView(
@@ -157,12 +221,12 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
             const SizedBox(height: 40),
 
             PrimaryButton(
-              text: "Gerät speichern",
-              icon: Icons.save,
-              onPressed: () {
-
-              },
-            ),
+  text: widget.device == null
+      ? "Gerät speichern"
+      : "Änderungen speichern",
+  icon: Icons.save,
+  onPressed: _saveDevice,
+),
 
             const SizedBox(height: 20),
 

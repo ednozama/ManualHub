@@ -5,6 +5,8 @@ import '../widgets/custom_textfield.dart';
 import '../widgets/primary_button.dart';
 import '../models/device.dart';
 import '../services/storage_service.dart';
+import 'dart:io';
+import '../services/image_service.dart';
 
 class AddDeviceScreen extends StatefulWidget {
   final Device? device;
@@ -28,6 +30,8 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
 
   String? selectedCategory;
   String? selectedLocation;
+  String? imagePath;
+  String? manualPath;
 
   final List<String> categories = [
     "Fernseher",
@@ -64,6 +68,8 @@ void initState() {
 
     selectedCategory = widget.device!.category;
     selectedLocation = widget.device!.location;
+    imagePath = widget.device!.imagePath;
+    manualPath = widget.device!.manualPath;
   }
 }
 
@@ -95,7 +101,8 @@ void initState() {
       model: modelController.text.trim(),
       category: selectedCategory!,
       location: selectedLocation ?? "",
-      imagePath: null,
+      imagePath: imagePath,
+      manualPath: manualPath,
     );
 
     await StorageService.addDevice(device);
@@ -105,6 +112,8 @@ void initState() {
     widget.device!.model = modelController.text.trim();
     widget.device!.category = selectedCategory!;
     widget.device!.location = selectedLocation ?? "";
+    widget.device!.imagePath = imagePath;
+    widget.device!.manualPath = manualPath;
 
     await widget.device!.save();
   }
@@ -112,6 +121,53 @@ void initState() {
   if (!mounted) return;
 
   Navigator.pop(context);
+}
+
+Future<void> _selectImage() async {
+  showModalBottomSheet(
+    context: context,
+    builder: (_) {
+      return SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_camera),
+              title: const Text("Foto aufnehmen"),
+              onTap: () async {
+                Navigator.pop(context);
+
+                final path =
+                    await ImageService.pickImageFromCamera();
+
+                if (path != null) {
+                  setState(() {
+                    imagePath = path;
+                  });
+                }
+              },
+            ),
+
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text("Aus Galerie auswählen"),
+              onTap: () async {
+                Navigator.pop(context);
+
+                final path =
+                    await ImageService.pickImageFromGallery();
+
+                if (path != null) {
+                  setState(() {
+                    imagePath = path;
+                  });
+                }
+              },
+            ),
+          ],
+        ),
+      );
+    },
+  );
 }
 
   @override
@@ -144,7 +200,7 @@ void initState() {
                 children: [
 
                   InkWell(
-                    onTap: () {},
+                    onTap: _selectImage,
 
                     borderRadius: BorderRadius.circular(60),
 
@@ -152,11 +208,20 @@ void initState() {
                       radius: 55,
                       backgroundColor: Colors.white10,
 
-                      child: Icon(
-                        Icons.photo_camera,
-                        size: 45,
-                        color: Colors.grey.shade300,
-                      ),
+                      child: imagePath == null
+    ? Icon(
+        Icons.photo_camera,
+        size: 45,
+        color: Colors.grey.shade300,
+      )
+    : ClipOval(
+        child: Image.file(
+          File(imagePath!),
+          width: 110,
+          height: 110,
+          fit: BoxFit.cover,
+        ),
+      ),
                     ),
                   ),
 

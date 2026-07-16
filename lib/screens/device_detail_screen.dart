@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-
+import 'dart:io';
 import '../models/device.dart';
 import 'add_device_screen.dart';
+import '../services/pdf_service.dart';
 
 class DeviceDetailScreen extends StatefulWidget {
   final Device device;
@@ -31,6 +32,19 @@ class _DeviceDetailScreenState extends State<DeviceDetailScreen> {
     setState(() {});
   }
 
+  Future<void> _selectManual() async {
+  final path = await PdfService.pickPdf();
+
+  if (path == null) return;
+
+  widget.device.manualPath = path;
+  await widget.device.save();
+
+  if (!mounted) return;
+
+  setState(() {});
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,13 +62,19 @@ class _DeviceDetailScreenState extends State<DeviceDetailScreen> {
 
             const SizedBox(height: 20),
 
-            const CircleAvatar(
-              radius: 55,
-              child: Icon(
-                Icons.devices,
-                size: 45,
-              ),
-            ),
+            CircleAvatar(
+  radius: 55,
+  backgroundColor: Colors.white10,
+  backgroundImage: widget.device.imagePath != null
+      ? FileImage(File(widget.device.imagePath!))
+      : null,
+  child: widget.device.imagePath == null
+      ? const Icon(
+          Icons.devices,
+          size: 45,
+        )
+      : null,
+),
 
             const SizedBox(height: 20),
 
@@ -96,6 +116,22 @@ class _DeviceDetailScreenState extends State<DeviceDetailScreen> {
                 ),
               ),
             ),
+
+            const SizedBox(height: 12),
+
+Card(
+  child: ListTile(
+    leading: const Icon(Icons.picture_as_pdf),
+    title: const Text("Bedienungsanleitung"),
+    subtitle: Text(
+      widget.device.manualPath == null
+          ? "Keine Bedienungsanleitung vorhanden"
+          : "Bedienungsanleitung gespeichert",
+    ),
+    trailing: const Icon(Icons.chevron_right),
+    onTap: _selectManual,
+  ),
+),
 
             const SizedBox(height: 30),
 

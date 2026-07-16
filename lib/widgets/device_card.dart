@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'dart:io';
 import '../models/device.dart';
 import '../theme/app_theme.dart';
 
@@ -50,14 +50,18 @@ class DeviceCard extends StatelessWidget {
             children: [
 
               CircleAvatar(
-                radius: 28,
-                backgroundColor: AppTheme.primary,
-
-                child: Icon(
-                  _categoryIcon(),
-                  color: Colors.white,
-                ),
-              ),
+  radius: 28,
+  backgroundColor: AppTheme.primary,
+  backgroundImage: device.imagePath != null
+      ? FileImage(File(device.imagePath!))
+      : null,
+  child: device.imagePath == null
+      ? Icon(
+          _categoryIcon(),
+          color: Colors.white,
+        )
+      : null,
+),
 
               const SizedBox(width: 16),
 

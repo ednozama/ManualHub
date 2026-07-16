@@ -20,11 +20,15 @@ class Device extends HiveObject {
   @HiveField(4)
   String? imagePath;
 
+  @HiveField(5)
+  String? manualPath;
+
   Device({
     required this.manufacturer,
     required this.model,
     required this.category,
     required this.location,
     this.imagePath,
+    this.manualPath,
   });
 }

@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'history_entry.dart';
 
 part 'device.g.dart';
 
@@ -23,12 +24,24 @@ class Device extends HiveObject {
   @HiveField(5)
   String? manualPath;
 
-  Device({
-    required this.manufacturer,
-    required this.model,
-    required this.category,
-    required this.location,
-    this.imagePath,
-    this.manualPath,
-  });
+  @HiveField(6)
+  String? invoicePath;
+
+  @HiveField(7)
+  String? warrantyPath;
+
+  @HiveField(8)
+List<HistoryEntry> history;
+
+Device({
+  required this.manufacturer,
+  required this.model,
+  required this.category,
+  required this.location,
+  this.imagePath,
+  this.manualPath,
+  this.invoicePath,
+  this.warrantyPath,
+  List<HistoryEntry>? history,
+}) : history = history ?? [];
 }

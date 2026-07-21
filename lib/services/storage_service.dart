@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import '../models/device.dart';
+import '../models/history_entry.dart';
 
 class StorageService {
   static const String deviceBoxName = "devices";
@@ -11,6 +12,7 @@ class StorageService {
 
     if (!Hive.isAdapterRegistered(0)) {
       Hive.registerAdapter(DeviceAdapter());
+      Hive.registerAdapter(HistoryEntryAdapter());
     }
 
     await Hive.openBox<Device>(deviceBoxName);

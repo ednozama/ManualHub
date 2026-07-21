@@ -22,13 +22,17 @@ class DeviceAdapter extends TypeAdapter<Device> {
       category: fields[2] as String,
       location: fields[3] as String,
       imagePath: fields[4] as String?,
+      manualPath: fields[5] as String?,
+      invoicePath: fields[6] as String?,
+      warrantyPath: fields[7] as String?,
+      history: (fields[8] as List?)?.cast<HistoryEntry>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, Device obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.manufacturer)
       ..writeByte(1)
@@ -38,7 +42,15 @@ class DeviceAdapter extends TypeAdapter<Device> {
       ..writeByte(3)
       ..write(obj.location)
       ..writeByte(4)
-      ..write(obj.imagePath);
+      ..write(obj.imagePath)
+      ..writeByte(5)
+      ..write(obj.manualPath)
+      ..writeByte(6)
+      ..write(obj.invoicePath)
+      ..writeByte(7)
+      ..write(obj.warrantyPath)
+      ..writeByte(8)
+      ..write(obj.history);
   }
 
   @override

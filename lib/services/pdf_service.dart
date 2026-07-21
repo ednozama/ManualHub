@@ -31,9 +31,24 @@ class PdfService {
     final newPath =
         "${pdfDirectory.path}/$fileName";
 
-    final newFile =
-        await file.copy(newPath);
+    final newFile = await file.copy(newPath);
 
     return newFile.path;
+  }
+
+  static String getDisplayName(String? filePath) {
+    if (filePath == null) {
+      return "";
+    }
+
+    final fileName = path.basename(filePath);
+
+    final parts = fileName.split("_");
+
+    if (parts.length <= 1) {
+      return fileName;
+    }
+
+    return parts.sublist(1).join("_");
   }
 }

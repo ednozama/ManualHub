@@ -9,6 +9,7 @@ import '../models/document_type.dart';
 import '../widgets/history_card.dart';
 import 'add_history_entry_screen.dart';
 import '../models/history_entry.dart';
+import 'history_detail_screen.dart';
 
 class DeviceDetailScreen extends StatefulWidget {
   final Device device;
@@ -329,8 +330,37 @@ if (widget.device.history.isEmpty)
   )
 else
   ...widget.device.history.map(
-    (entry) => HistoryCard(entry: entry),
+  (entry) => HistoryCard(
+    entry: entry,
+    onTap: () async {
+
+  final result = await Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => HistoryDetailScreen(
+        entry: entry,
+      ),
+    ),
+  );
+
+  if (result == true) {
+    widget.device.history.remove(entry);
+    await widget.device.save();
+  } else if (result is HistoryEntry) {
+    final index = widget.device.history.indexOf(entry);
+
+    if (index != -1) {
+      widget.device.history[index] = result;
+      await widget.device.save();
+    }
+  }
+
+  if (!mounted) return;
+
+  setState(() {});
+},
   ),
+),
 
 const SizedBox(height: 12),
 

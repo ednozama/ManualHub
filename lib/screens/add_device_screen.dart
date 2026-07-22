@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../widgets/custom_dropdown.dart';
 import '../widgets/custom_textfield.dart';
 import '../widgets/primary_button.dart';
+import '../widgets/app_page.dart';
 import '../models/device.dart';
 import '../services/storage_service.dart';
 import 'dart:io';
@@ -231,11 +232,11 @@ Future<void> _pickPurchaseDate() async {
 ),
       ),
 
-      body: SingleChildScrollView(
+      body: AppPage(
+  child: SingleChildScrollView(
+    padding: const EdgeInsets.all(20),
 
-        padding: const EdgeInsets.all(20),
-
-        child: Column(
+    child: Column(
 
           crossAxisAlignment: CrossAxisAlignment.start,
 
@@ -392,6 +393,7 @@ PrimaryButton(
 
           ],
         ),
+      ),
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/history_entry.dart';
 import 'add_history_entry_screen.dart';
+import '../widgets/app_page.dart';
 
 class HistoryDetailScreen extends StatefulWidget {
   final HistoryEntry entry;
@@ -73,11 +74,11 @@ class _HistoryDetailScreenState
         title: const Text("Historieneintrag"),
       ),
 
-      body: SingleChildScrollView(
+      body: AppPage(
+  child: SingleChildScrollView(
+    padding: const EdgeInsets.all(20),
 
-        padding: const EdgeInsets.all(20),
-
-        child: Column(
+    child: Column(
 
           crossAxisAlignment: CrossAxisAlignment.start,
 
@@ -161,6 +162,7 @@ SizedBox(
 ),
           ],
         ),
+      ),
       ),
     );
   }

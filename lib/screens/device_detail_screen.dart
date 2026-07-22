@@ -5,6 +5,7 @@ import 'add_device_screen.dart';
 import '../services/pdf_service.dart';
 import 'package:open_filex/open_filex.dart';
 import '../widgets/document_card.dart';
+import '../widgets/app_page.dart';
 import '../models/document_type.dart';
 import '../widgets/history_card.dart';
 import 'add_history_entry_screen.dart';
@@ -248,10 +249,11 @@ String _getWarrantyStatusText() {
         title: const Text("Gerät"),
       ),
 
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+      body: AppPage(
+  child: SingleChildScrollView(
+    padding: const EdgeInsets.all(20),
 
-        child: Column(
+    child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
 
           children: [
@@ -514,6 +516,7 @@ SizedBox(
             ),
           ],
         ),
+      ),
       ),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/history_entry.dart';
+import '../widgets/app_page.dart';
 
 class AddHistoryEntryScreen extends StatefulWidget {
   final HistoryEntry? entry;
@@ -102,11 +103,12 @@ Future<void> _pickDate() async {
         title: const Text("Historieneintrag"),
       ),
 
-      body: SingleChildScrollView(
+      body: AppPage(
+  child: SingleChildScrollView(
 
-        padding: const EdgeInsets.all(20),
+    padding: const EdgeInsets.all(20),
 
-        child: Column(
+    child: Column(
 
           children: [
 
@@ -174,6 +176,7 @@ InkWell(
             ),
           ],
         ),
+      ),
       ),
     );
   }

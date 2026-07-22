@@ -31,17 +31,25 @@ class Device extends HiveObject {
   String? warrantyPath;
 
   @HiveField(8)
-List<HistoryEntry> history;
+  List<HistoryEntry> history;
 
-Device({
-  required this.manufacturer,
-  required this.model,
-  required this.category,
-  required this.location,
-  this.imagePath,
-  this.manualPath,
-  this.invoicePath,
-  this.warrantyPath,
-  List<HistoryEntry>? history,
-}) : history = history ?? [];
+  @HiveField(9)
+  DateTime? purchaseDate;
+
+  @HiveField(10)
+  int? warrantyYears;
+
+  Device({
+    required this.manufacturer,
+    required this.model,
+    required this.category,
+    required this.location,
+    this.imagePath,
+    this.manualPath,
+    this.invoicePath,
+    this.warrantyPath,
+    List<HistoryEntry>? history,
+    this.purchaseDate,
+    this.warrantyYears,
+  }) : history = history ?? [];
 }

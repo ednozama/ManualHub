@@ -33,29 +33,55 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
   String? imagePath;
   String? manualPath;
 
+  DateTime? purchaseDate;
+  int? warrantyYears;
+
   final List<String> categories = [
     "Fernseher",
-    "Kaffeemaschine",
+    "Heimkino",
+    "Verstärker",
+    "Blu-ray Player",
+    "Spielekonsole",
+    "Smart Home",
+    "Router",
+    "Lautsprecher",
+    "Küchengroßgerät",
+    "Küchenmaschine",
     "Waschmaschine",
-    "Kühlschrank",
-    "Backofen",
+    "Trockner",
     "Smartphone",
     "Laptop",
     "Drucker",
-    "Router",
     "Werkzeug",
+    "Computer",
+    "Netzwerk",
     "Sonstiges",
   ];
 
   final List<String> locations = [
     "Wohnzimmer",
+    "Esszimmer",
     "Küche",
+    "Badezimmer",
     "Schlafzimmer",
+    "Kinderzimmer 1",
+    "Kinderzimmer 2",
+    "Kinderzimmer 3",
+    "Arbeitszimmer",
     "Büro",
     "Garage",
     "Keller",
     "Garten",
+    "Heizraum",
     "Sonstiges",
+  ];
+
+  final List<int> warrantyOptions = [
+    1,
+    2,
+    3,
+    4,
+    5,
   ];
 
   @override
@@ -70,6 +96,9 @@ void initState() {
     selectedLocation = widget.device!.location;
     imagePath = widget.device!.imagePath;
     manualPath = widget.device!.manualPath;
+
+    purchaseDate = widget.device!.purchaseDate;
+    warrantyYears = widget.device!.warrantyYears;
   }
 }
 
@@ -103,6 +132,8 @@ void initState() {
       location: selectedLocation ?? "",
       imagePath: imagePath,
       manualPath: manualPath,
+      purchaseDate: purchaseDate,
+      warrantyYears: warrantyYears,
     );
 
     await StorageService.addDevice(device);
@@ -114,6 +145,8 @@ void initState() {
     widget.device!.location = selectedLocation ?? "";
     widget.device!.imagePath = imagePath;
     widget.device!.manualPath = manualPath;
+    widget.device!.purchaseDate = purchaseDate;
+    widget.device!.warrantyYears = warrantyYears;
 
     await widget.device!.save();
   }
@@ -168,6 +201,21 @@ Future<void> _selectImage() async {
       );
     },
   );
+}
+
+Future<void> _pickPurchaseDate() async {
+  final picked = await showDatePicker(
+    context: context,
+    initialDate: purchaseDate ?? DateTime.now(),
+    firstDate: DateTime(2000),
+    lastDate: DateTime(2100),
+  );
+
+  if (picked == null) return;
+
+  setState(() {
+    purchaseDate = picked;
+  });
 }
 
   @override
@@ -283,9 +331,56 @@ Future<void> _selectImage() async {
               },
             ),
 
-            const SizedBox(height: 40),
+            const SizedBox(height: 25),
 
-            PrimaryButton(
+InkWell(
+  onTap: _pickPurchaseDate,
+  borderRadius: BorderRadius.circular(12),
+  child: InputDecorator(
+    decoration: const InputDecoration(
+      labelText: "Kaufdatum",
+      border: OutlineInputBorder(),
+      prefixIcon: Icon(Icons.calendar_month),
+    ),
+    child: Text(
+      purchaseDate == null
+          ? "Nicht angegeben"
+          : "${purchaseDate!.day.toString().padLeft(2, '0')}."
+            "${purchaseDate!.month.toString().padLeft(2, '0')}."
+            "${purchaseDate!.year}",
+    ),
+  ),
+),
+
+const SizedBox(height: 25),
+
+DropdownButtonFormField<int>(
+  value: warrantyYears,
+  decoration: const InputDecoration(
+    labelText: "Garantiedauer",
+    border: OutlineInputBorder(),
+    prefixIcon: Icon(Icons.verified_user),
+  ),
+  items: warrantyOptions
+      .map(
+        (year) => DropdownMenuItem(
+          value: year,
+          child: Text(
+            "$year ${year == 1 ? "Jahr" : "Jahre"}",
+          ),
+        ),
+      )
+      .toList(),
+  onChanged: (value) {
+    setState(() {
+      warrantyYears = value;
+    });
+  },
+),
+
+const SizedBox(height: 40),
+
+PrimaryButton(
   text: widget.device == null
       ? "Gerät speichern"
       : "Änderungen speichern",

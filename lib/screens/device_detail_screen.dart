@@ -176,6 +176,71 @@ String _getDocumentTitle(DocumentType type) {
   );
 }
 
+DateTime? _getWarrantyEndDate() {
+  if (widget.device.purchaseDate == null ||
+      widget.device.warrantyYears == null) {
+    return null;
+  }
+
+  final purchase = widget.device.purchaseDate!;
+
+  return DateTime(
+    purchase.year + widget.device.warrantyYears!,
+    purchase.month,
+    purchase.day,
+  );
+}
+
+String _formatDate(DateTime? date) {
+  if (date == null) return "Nicht angegeben";
+
+  return "${date.day.toString().padLeft(2, '0')}."
+      "${date.month.toString().padLeft(2, '0')}."
+      "${date.year}";
+}
+
+Color _getWarrantyStatusColor() {
+  final endDate = _getWarrantyEndDate();
+
+  if (endDate == null) {
+    return Colors.grey;
+  }
+
+  final days =
+      endDate.difference(DateTime.now()).inDays;
+
+  if (days < 0) {
+    return Colors.red;
+  }
+
+  if (days <= 30) {
+    return Colors.orange;
+  }
+
+  return Colors.green;
+}
+
+String _getWarrantyStatusText() {
+  final endDate = _getWarrantyEndDate();
+
+  if (endDate == null) {
+    return "Keine Garantieinformationen";
+  }
+
+  final days =
+      endDate.difference(DateTime.now()).inDays;
+
+  if (days < 0) {
+    return "Garantie seit ${days.abs()} Tagen abgelaufen";
+  }
+
+  if (days <= 30) {
+    return "Garantie läuft in $days Tagen ab";
+  }
+
+  return "Garantie noch $days Tage gültig";
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -301,6 +366,70 @@ const SizedBox(height: 12),
                 ),
               ),
             ),
+
+            const SizedBox(height: 30),
+
+Align(
+  alignment: Alignment.centerLeft,
+  child: Text(
+    "Garantie",
+    style: TextStyle(
+      fontSize: 22,
+      fontWeight: FontWeight.bold,
+    ),
+  ),
+),
+
+const SizedBox(height: 12),
+
+Card(
+  child: ListTile(
+    leading: const Icon(Icons.calendar_month),
+    title: const Text("Kaufdatum"),
+    subtitle: Text(
+      _formatDate(widget.device.purchaseDate),
+    ),
+  ),
+),
+
+Card(
+  child: ListTile(
+    leading: const Icon(Icons.verified_user),
+    title: const Text("Garantiedauer"),
+    subtitle: Text(
+      widget.device.warrantyYears == null
+          ? "Nicht angegeben"
+          : "${widget.device.warrantyYears} "
+            "${widget.device.warrantyYears == 1 ? "Jahr" : "Jahre"}",
+    ),
+  ),
+),
+
+Card(
+  child: ListTile(
+    leading: Icon(
+      Icons.event_available,
+      color: _getWarrantyStatusColor(),
+    ),
+    title: const Text("Garantieende"),
+    subtitle: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          _formatDate(_getWarrantyEndDate()),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          _getWarrantyStatusText(),
+          style: TextStyle(
+            color: _getWarrantyStatusColor(),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    ),
+  ),
+),
 
             const SizedBox(height: 30),
 
